@@ -1,0 +1,32 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: #C7FFE0
+}
+
+nav.nav {
+    height: 50px;
+    background-color: #A9E8AE;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+div.choose{
+    display:flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    position: absolute;
+    left: 31%;
+    top:40%;
+    min-width: 457px;
+    height: 110px;
+    overflow: hidden;
+}
+
+div.choose h1{
+    align-content: center;
+    color: #A9E8DD;
+}
