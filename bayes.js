@@ -10,7 +10,7 @@ const DAO = require("./DAO.js");
 const bayes = express.Router();
 
 //  Se declara la variable del DAO
-const dao = new DAO();
+const dao = new DAO("Iris2Clases.txt");
 
 // MulterFactory
 const multerFactory = multer({ storage: multer.memoryStorage() });

@@ -7,20 +7,24 @@ const multer = require("multer");
 const DAO = require("./DAO.js");
 
 //  Se declara el router
-const lloyd = express.Router();
+const index = express.Router();
 
 //  Se declara la variable del DAO
-const dao = new DAO("Iris2Clases.txt");
+const dao = new DAO();
 
 // MulterFactory
 const multerFactory = multer({ storage: multer.memoryStorage() });
 
-lloyd.get("/", function(request, response){
 
+index.get("/index", function(request, response){
     response.status(200);
-    let data = dao.getData();
-    //Se resuelve el algoritmo
-    response.render("lloyd", {data: data} )
+    response.render("index");
 });
 
-module.exports = lloyd;
+index.get("/", function(request, response){
+    response.status(200);
+    response.redirect("/index");
+});
+
+
+module.exports = index;
