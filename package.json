@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/Char-Mander/Pr-ctica3_IC/issues"
   },
-  "homepage": "https://github.com/Char-Mander/Pr-ctica3_IC#readme"
+  "homepage": "https://github.com/Char-Mander/Pr-ctica3_IC#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "multer": "^1.4.1"
+  }
 }
