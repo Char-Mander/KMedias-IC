@@ -1,0 +1,19 @@
+{
+  "name": "p3ic",
+  "version": "1.0.0",
+  "description": "Práctica 3 de IC",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Char-Mander/Pr-ctica3_IC.git"
+  },
+  "author": "Laura Jiménez Fernández",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Char-Mander/Pr-ctica3_IC/issues"
+  },
+  "homepage": "https://github.com/Char-Mander/Pr-ctica3_IC#readme"
+}
