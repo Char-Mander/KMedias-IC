@@ -11,8 +11,7 @@ class DAO {
                 callback(new Error("Error al leer el fichero")), null;
             }
             else {
-                console.log(Array.from(data.toString()));
-                callback(null, data.toString());
+                callback(null, data.toString().split("\r\n"));
             }
         })
     }
