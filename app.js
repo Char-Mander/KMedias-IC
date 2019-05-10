@@ -24,8 +24,6 @@ app.use("/bayes", bayes);
 app.use("/kmedias", kmedias);
 app.use("/lloyd", lloyd);
 
-
-
 //  Arranque del servidor
 app.listen(3000, function (err) {
     if (err) {
@@ -35,4 +33,3 @@ app.listen(3000, function (err) {
         console.log(`Servidor arrancado en el puerto 3000`);
     }
 });
-

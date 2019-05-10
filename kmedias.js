@@ -17,10 +17,16 @@ const multerFactory = multer({ storage: multer.memoryStorage() });
 
 kmedias.get("/", function(request, response){
 
-    response.status(200);
-    let data = dao.getData();
-    //Se resuelve el algoritmo
-    response.render("kmedias", {data: data} )
+    let data = dao.getData(function(error, d){
+        if(error){
+            response.status(500);
+            response.render("index");
+        }
+        else{
+            response.status(200);
+        response.render("kmedias", {data: data} );
+        }
+    });
 });
 
 

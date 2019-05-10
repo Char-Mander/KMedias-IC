@@ -2,7 +2,7 @@
 
 // Declaración de constantes
 const express = require("express");
-const path = require("path");
+//const path = require("path");
 const multer = require("multer");
 const DAO = require("./DAO.js");
 
