@@ -6,6 +6,7 @@ const express = require("express");
 const multer = require("multer");
 const DAO = require("./DAO.js");
 const Classes = require("./classes.js");
+//const Samples = requre("./samples.js");
 
 //  Se declara el router
 const bayes = express.Router();
@@ -13,6 +14,7 @@ const bayes = express.Router();
 //  Se declara la variable del DAO
 const dao = new DAO("Iris2Clases.txt", "TestIris01.txt", "TestIris02.txt", "TestIris03.txt");
 const classes = new Classes();
+//const samples = new Samples();
 
 // MulterFactory
 const multerFactory = multer({ storage: multer.memoryStorage() });
@@ -36,7 +38,6 @@ bayes.get("/", function(request, response){
                     }
                     else{
                         response.status(200);
-                       console.log(listOfSamples);
                         response.render("bayes", {data: d});
                     }
                
@@ -79,6 +80,7 @@ function getSamples(){
             
         }
     });
+
     return samples;
 }
 
