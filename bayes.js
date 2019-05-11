@@ -21,7 +21,6 @@ const multerFactory = multer({ storage: multer.memoryStorage() });
 
 bayes.get("/", function(request, response){
 
-
     dao.getData(function(error, d){
         if(error){
             response.status(500);
@@ -38,6 +37,7 @@ bayes.get("/", function(request, response){
                     }
                     else{
                         response.status(200);
+                            //Se resuelve el algoritmo
                         response.render("bayes", {data: d});
                     }
                
@@ -46,7 +46,6 @@ bayes.get("/", function(request, response){
             
         }
     });
-    //Se resuelve el algoritmo
     
 });
 
