@@ -4,13 +4,10 @@
 const express = require("express");
 //const path = require("path");
 const multer = require("multer");
-const DAO = require("./DAO.js");
 
 //  Se declara el router
 const index = express.Router();
 
-//  Se declara la variable del DAO
-const dao = new DAO();
 
 // MulterFactory
 const multerFactory = multer({ storage: multer.memoryStorage() });

@@ -11,7 +11,7 @@ const Classes = require("./classes.js");
 const kmedias = express.Router();
 
 //  Se declara la variable del DAO
-const dao = new DAO("Iris2Clases.txt");
+const dao = new DAO("Iris2Clases.txt", "TestIris01.txt", "TestIris02.txt", "TestIris03.txt");
 const classes = new Classes();
 
 // MulterFactory
