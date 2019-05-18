@@ -6,3 +6,19 @@
 body{
     background-color: #C7FFE0
 }
+
+div.container{
+    max-width: 500px;
+    max-height: 200px;
+    min-width: 400px;
+    min-height: 100px;
+    justify-content: center;
+    align-content: center;
+
+}
+
+div.row{
+    justify-content: center;
+    align-content: center;
+}
+
