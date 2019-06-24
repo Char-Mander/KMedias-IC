@@ -5,7 +5,6 @@ var algorithm = function (name) {
     // --------------------------------- CLASE QUE SACA LOS DATOS DE LOS FICHEROS ---------------------------------
 
     //  Declaración de constantes necesarias para el DAO
-    // const fs = require('fs');
 
     class DAO {
         constructor(file) {
@@ -132,7 +131,7 @@ var algorithm = function (name) {
                 vaux = [];
             }
             else {
-                vaux.push(data[i - 1]);
+                vaux.push(Number(data[i - 1]));
             }
 
         }
@@ -159,7 +158,8 @@ var algorithm = function (name) {
 
             this.all = {
                 "name": "All",
-                "muestras": []
+                "muestras": [],
+                "centros": []
             }
 
         }
@@ -173,31 +173,44 @@ var algorithm = function (name) {
                     this.versicolor.muestras.push(data[i]);
                 }
 
-                this.all.muestras.push(data[i]);
+                this.all.muestras.push(data[i].vector);
             }
-            console.log(this.all.muestras);
+
             callback("Los datos se han clasificado correctamente");
         }
 
 
-        setVectorSetosa(v) {
-            this.setosa.vector = v;
+        setVectores() {
+            let m1 = [0, 0, 0, 0], m2 = [0, 0, 0, 0];
+
+            for (let i = 0; i < this.setosa.muestras[0].vector.length; i++) {
+                for (let j = 0; j < this.setosa.muestras.length; j++) {
+                    m1[i] += this.setosa.muestras[j].vector[i];
+                    m2[i] += this.versicolor.muestras[j].vector[i];
+                }
+                this.setosa.vector.push(m1[i] / this.setosa.muestras.length);
+                this.versicolor.vector.push(m2[i] / this.versicolor.muestras.length);
+            }
+
+            this.all.centros.push(this.setosa.vector);
+            this.all.centros.push(this.versicolor.vector);
+            
         }
 
         getVectorSetosa() {
             return this.setosa.vector;
         }
 
-        setVectorVersicolor(v) {
-            this.setosa.vector = v;
-        }
-
         getVectorVersicolor() {
             return this.versicolor.vector;
         }
 
-        getAll(){
-            return this.all;
+        getAllMuestras() {
+            return this.all.muestras;
+        }
+
+        getAllCentros() {
+            return [this.setosa.vector, this.versicolor.vector];
         }
 
         getIrisSetosa() {
@@ -208,6 +221,9 @@ var algorithm = function (name) {
             return this.versicolor;
         }
 
+        getTotalMuestras() {
+            return this.all.muestras.length;
+        }
     }
 
 
@@ -226,7 +242,7 @@ var algorithm = function (name) {
                 "class": "Iris-versicolor",
                 "vector": [6.9, 3.1, 4.9, 1.5]
             }
-            this.sample2 = {
+            this.sample3 = {
                 "class": "Iris-setosa",
                 "vector": [5.0, 3.4, 1.5, 0.2]
             }
@@ -234,16 +250,21 @@ var algorithm = function (name) {
 
 
         getSample1() {
-            return this.sample1;
+            return this.sample1.vector;
         }
 
         getSample2() {
-            return this.sample2;
+            return this.sample2.vector;
         }
 
         getSample3() {
-            return this.sample3;
+            return this.sample3.vector;
         }
+
+        getAllSamples() {
+            return [this.sample1.vector, this.sample2.vector, this.sample3.vector];
+        }
+
 
     }
 
@@ -263,17 +284,9 @@ var algorithm = function (name) {
     if (samples === undefined)
         samples = new Samples();
 
-    var c1, c2;
-    if (c1 === undefined)
-        c1 = [4.6, 3.0, 4.0, 0.0];
-    if (c2 === undefined)
-        c2 = [6.8, 3.4, 4.6, 0.7];
-
 
     //Elementos de cada algoritmo particular
-    var bayes;
     var kmedias;
-    var lloyd;
 
 
     //DEJAMOS PREPARADOS LOS DATOS
@@ -285,228 +298,166 @@ var algorithm = function (name) {
             }
             else {
                 classes.classifyData(d, function (message1) {
-                    classes.setVectorSetosa(c1);
-                    classes.setVectorVersicolor(c2);
-                    console.log("Centros asignados correctamente");
+                    classes.setVectores();
+                    console.log("Centros asignados correctamente haciendo la media de todas las muestras");
                 });
 
             }
         });
     };
 
-
+    //Primero coge todos los datos de los ficheros
     loadData();
-
-
-
-
-    // --------------------------------- ALGORITMO BAYES ---------------------------------
-
-    class Bayes {
-        constructor(classes, samples) {
-            this.classes = classes;
-            this.samples = samples;
-        }
-
-        executeBayes() {
-
-            let result = $(`<div class = "container" id = "bayesContainer"> <div class='row'>
-            <div class='col'> 1 of 2 bayes </div>
-            <div class='col'> 2 of 2 bayes </div>
-            </div>
-            <div class='row'>
-                <div class='col'> 1 of 3 bayes </div>
-                <div class='col'> 2 of 3 bayes </div>
-            </div> </div>`);
-            $( "body" ).append(result); 
-        }
-
-        mostrar(){
-            
-        }
-
-
-    };
 
 
 
     // --------------------------------- ALGORITMO K-MEDIAS ---------------------------------
 
     class KMedias {
-        constructor(classes, samples, c1, c2) {
-            this.data = classes.getAll();
+        constructor(data, samples) {
             this.samples = samples;
+            this.data = data;
+            this.filasMatriz = classes.getAllCentros().length;
+            this.centers = [[4.6, 3.0, 4.0, 0.0], [6.8, 3.4, 4.6, 0.7]];
+            this.old_centers = [];
+            this.centers.forEach(row => this.old_centers.push(row));
             this.tolerancia = 0.01;
-            this.exp = 2;
-            this.oldC1 = c1;
-            this.oldC2 = c2;
-            this.newC1 = 0;
-            this.newC2 = 0;
+            this.b = 2;
+            this.mostrar = [];
         }
 
-        executeKMedias() {
-            iterarCentros(null, "");
-           /* let res1, res2; 
-            let data1={}, data2={}; 
-            let list = this.data;
-
-            //Primera iteración
-            for(let i = 0; i< list.length; i++){
-                res1 = 0;
-                res2 = 0;
-
-                for(let j=0; j<list[i].vector.length; j++){
-                res1 += Math.pow((parseFloat(list[i].vector[j]) - parseFloat(this.oldC1[j])), this.exp);
-                res2 += Math.pow((parseFloat(list[i].vector[j]) - parseFloat(this.oldC2[j])), this.exp);
-                }
-                res1 / list[i].vector.length;
-                res2 / list[i].vector.length;
-
-                if(res1<res2){
-                    data1.push(list[i].vector);
-                }
-                else{
-                    data2.push(list[i].vector);
-                }
-                
-            }
-
-            this.newC1 = recalcularCentros(data1, this.oldC1);
-            this.newC2 = recalcularCentros(data2, this.oldC2);
-
-            if(this.newC1 < this.newC2){
-                this.oldC1 = iterarCentros(this.newC1, "c1");
-            }
-            else{
-                this.oldC2 = iterarCentros(this.newC2, "c2");
-            }
-*/
-            mostrarKmedias();
-        }
-
-
-        iterarCentros(center, name){
-            let res1, res2; 
-            let data1={}, data2={}; 
-            let center1, center2;
-
-            switch(name){
-                case "c1":  
-                center1 = center;
-                center2 = this.oldC2;
-                break;
-
-                case "c2": 
-                center1 = this.oldC1;
-                center2 = center;
-                break;
-
-                default:  
-                center1 = this.oldC1;
-                center2 = this.oldC2;
-                break;
-            }
-
-            let list = this.data;
-    
-            for(let i = 0; i< list.length; i++){
-                res1 = 0;
-                res2 = 0;
-    
-                for(let j=0; j<list[i].vector.length; j++){
-                res1 += Math.pow((parseFloat(list[i].vector[j]) - parseFloat(center1[j])), this.exp);
-                res2 += Math.pow((parseFloat(list[i].vector[j]) - parseFloat(center2[j])), this.exp);
-                }
-                res1 / list[i].vector.length;
-                res2 / list[i].vector.length;
-    
-                if(res1<res2){
-                    data1.push(list[i].vector);
-                }
-                else{
-                    data2.push(list[i].vector);
-                }
-                
-            }
-
-            this.newC1 = recalcularCentros(data1, center1);
-            this.newC2 = recalcularCentros(data2, center2);
-
-            if(this.newC1 < this.newC2){
-                this.oldC2 = this.newC2;
-                this.oldC1 = iterarCentros(this.newC1, "c1");
-            }
-            else{
-                this.oldC1 = this.newC1;
-                this.oldC2 = iterarCentros(this.newC2, "c2");
-            }
-
-        }
-
-        recalcularCentros(data, center){
-            let res=0;
-            for(let i = 0; i<data.length; i++){
-
-            }
-        }
-    
-        mostrarKMedias(){
-            let result = $(`<div class = "container" id = "kmediasContainer"> <div class='row'>
-            <div class='col'> 1 of 2 kmedias </div>
-            <div class='col'> 2 of 2 kmedias </div>
+        mostrarKMedias() {
+            let result = $(`<div class = "container" id = "kmediasContainer"> 
+            <div class='row'>
+            <div class='col'> La muestra testIris01 (${this.samples.getSample1()}) pertenece a la clase ${this.mostrar[0].clase} </div>
+            <div class='col'> Su grado de pertenencia es de ${this.mostrar[0].pertenencia} </div>
             </div>
             <div class='row'>
-                <div class='col'> 1 of 3 kmedias </div>
-                <div class='col'> 2 of 3 kmedias </div>
-            </div> </div>`);
-    
-            $( "body" ).append(result); 
-        }
-
-
-    };
-
-
-    // --------------------------------- ALGORITMO K-MEDIAS ---------------------------------
-
-    class Lloyd {
-        constructor(classes, samples) {
-            this.classes = classes;
-            this.samples = samples;
-        }
-
-        executeLloyd() {
-            let result = $(`<div class = "container" id = "bayesContainer"><div class='row'>
-            <div class='col'> 1 of 2 lloyd </div>
-            <div class='col'> 2 of 2 lloyd </div>
-            </div>
+            <div class='col'> La muestra testIris02 (${this.samples.getSample2()}) pertenece a la clase ${this.mostrar[1].clase} </div>
+            <div class='col'> Su grado de pertenencia es de ${this.mostrar[1].pertenencia} </div>
+            </div> 
             <div class='row'>
-                <div class='col'> 1 of 3 lloyd </div>
-                <div class='col'> 2 of 3 lloyd </div>
-            </div></div>`);
-           $( "body" ).append(result);
+            <div class='col'> La muestra testIris03 (${this.samples.getSample3()}) pertenece a la clase ${this.mostrar[2].clase} </div>
+            <div class='col'> Su grado de pertenencia es de ${this.mostrar[2].pertenencia} </div>
+            </div>
+            </div>`);
+
+            $("body").append(result);
         }
 
-    };
-
-    switch (name) {
-        case "bayes": if (bayes === undefined){
-            bayes = new Bayes(classes, samples);
-            }
-
-            bayes.executeBayes();
-            break;
-        case "kmedias": if (kmedias === undefined){
-            kmedias = new KMedias(classes, samples);
-            }
-
-            kmedias.executeKMedias();
-            break;
-        case "lloyd": if (lloyd === undefined){
-            lloyd = new Lloyd(classes, samples);
+        //Calcula la distancia entre una muestra y un centro
+        calcularD(muestra, centro) {
+            let res = 0;
+            
+            for (let i = 0; i < muestra.length; i++) {
+                res += Math.pow(Number(muestra[i]) - Number(centro[i]), 2);
             }
             
-            lloyd.executeLloyd();
+            return res;
+        }
+
+        //Calcula la pertenencia de una muestra respecto a cada centro y devuelve una matriz con cada resultado
+        calcularPertenencia(sample) {
+            let d1 = this.calcularD(sample, this.centers[0]);
+            let d2 = this.calcularD(sample, this.centers[1]);
+
+            let p1 = (1 / d1) / ((1 / d1) + (1 / d2));
+           
+            let p2 = (1 / d2) / ((1 / d1) + (1 / d2));
+           
+
+            return [p1, p2];
+        }
+
+        //Según el grado de pertenencia de cada muestra al centro, lo asigna a una clase o a otra
+        asignarAClase() {
+            let ps = [];
+            ps.push(this.calcularPertenencia(this.samples.getSample1()));
+            ps.push(this.calcularPertenencia(this.samples.getSample2()));
+            ps.push(this.calcularPertenencia(this.samples.getSample3()));
+            
+            for (let i = 0; i < ps.length; i++) {
+                let aux = { clase: "", pertenencia: 0 };
+                if (ps[i][0] > ps[i][1]) {
+                    aux.clase = "Iris setosa";
+                    aux.pertenencia = ps[i][0];
+                }
+                else {
+                    aux.clase = "Iris versicolor";
+                    aux.pertenencia = ps[i][1];
+                }
+                this.mostrar.push(aux);
+            }
+        }
+
+
+
+        //Itera hasta que los centros estén bien (según el grado de tolerancia)
+        executeKMedias() {
+            let end = false;
+            while (!end) {
+                this.matrix = [];
+                this.data.forEach((element, index) => {
+                    let belongingDegree = this.gradoPertenencia(0, index);
+                    this.matrix.push([belongingDegree, 1 - belongingDegree]);
+                });
+                this.reasignarCentros();
+                let value_centers;
+                this.centers.forEach((element, index) => {
+                    value_centers = this.calcularD(element, this.old_centers[index]);
+                    if (Math.sqrt(value_centers) < this.tolerancia) {
+                        end = true;
+                    } else {
+                        end = false;
+                    }
+                });
+                this.old_centers = [];
+                this.centers.forEach(row => this.old_centers.push(row));
+            }
+
+        }
+        
+        //Calcula el grado de pertenencia entre una muestra y un único centro
+        gradoPertenencia(i, j) {
+            let d = 1 / this.calcularD(this.data[j], this.centers[i]);
+            let total = 0;
+            for (let index = 0; index < this.filasMatriz; index++) {
+                total += 1 / this.calcularD(this.data[j], this.centers[index]);
+            }
+            return d / total;
+        }
+
+        //Reasigna los centros
+        reasignarCentros() {
+            for (let i = 0; i < this.filasMatriz; i++) {
+                this.centers[i] = [];
+                let dividendo = [0, 0, 0, 0];
+                let divisor = 0;
+                let contador = 0;
+                this.matrix.forEach((element, index) => {
+                    contador++;
+                    divisor += (Math.pow(element[i], 2));
+                    this.data[index].forEach((elem, j) => {
+                        contador++;
+                        dividendo[j] += (Math.pow(element[i], 2) * elem);
+                    });
+                });
+                dividendo.forEach((element, index) => {
+                    this.centers[i].push(element / divisor);
+                });
+
+            }
+        }
+    }
+
+
+    switch (name) {
+        case "kmedias": if (kmedias === undefined) {
+            kmedias = new KMedias(classes.getAllMuestras(), samples);
+        }
+            kmedias.executeKMedias();
+            kmedias.asignarAClase();
+            kmedias.mostrarKMedias();
             break;
     }
 
